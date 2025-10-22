@@ -1,0 +1,447 @@
+/* 기본 설정 */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    /* [★ 수정] 폰트 추가 및 변경 */
+    font-family: 'CucumberSalad', 'Malgun Gothic', sans-serif; 
+    background-color: #f0f0f0; 
+    overflow: hidden; /* 스크롤바 숨기기 */
+}
+
+/* [★ 추가] 폰트 임포트 */
+@font-face {
+    font-family: 'CucumberSalad';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-EF@1.0/EF_cucumbersalad.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
+
+/* 씬(Scene) 기본 스타일 */
+.scene {
+    width: 100%;
+    height: 100%;
+    display: none; /* 모든 씬을 일단 숨김 */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+/* 현재 활성화된 씬만 보여주기 */
+.scene.active {
+    display: flex;
+}
+
+/* 1. 진입 (Entry) */
+#entry {
+    background-image: url('medihouse_main.webp'); 
+    background-size: cover; /* 화면에 꽉 차게 */
+    background-position: center; /* 중앙 정렬 */
+    background-repeat: no-repeat; /* 반복 없음 */
+    
+    /* 3D 효과를 위한 원근감(perspective) 설정 */
+    perspective: 1000px; /* 멀리서 보는듯한 효과 */
+    color: white; 
+}
+
+/* [★ 수정] h1 위치 조절 */
+#entry h1 {
+    position: absolute; /* flexbox 흐름에서 분리 */
+    top: 15%;           /* 화면 상단에서 15% 지점에 배치 */
+    left: 50%;
+    transform: translateX(-50%); /* 정확히 수평 중앙 정렬 */
+    margin-top: 0;      /* 기존 margin-top 값 제거 */
+}
+
+#door {
+    width: 40px; 
+    height: 75px;
+    position: relative; 
+    cursor: pointer;
+    transform-style: preserve-3d; 
+    transform-origin: left center; 
+    transition: transform 1s ease-out; 
+    z-index: 10; 
+    transform: rotateY(0deg); 
+    top: 80px;
+    right: -55px;
+}
+
+/* 문이 열리는 상태 (JavaScript로 .open 클래스 추가) */
+#door.open {
+    transform: rotateY(-110deg); /* 왼쪽으로 110도 회전 */
+}
+
+/* 문 앞면 (둥근 모양, 텍스트 포함) */
+.door-front {
+    width: 100%;
+    height: 100%;
+    background-color: #380000; 
+    border: 3px solid #380000; 
+    /* [★ 수정] 너비(40px)의 절반인 20px로 변경 */
+    border-radius: 20px 20px 0 0; 
+    display: flex;
+    /* [★ 수정] 누락된 속성 복원 */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white; 
+    font-size: 1.2rem;
+    position: absolute; 
+    top: 0;
+    left: 0;
+    backface-visibility: hidden; 
+    box-sizing: border-box; 
+}
+
+/* 문 뒤면 (심플하게 처리) */
+.door-front::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #380000; 
+    /* [★ 수정] 너비(40px)의 절반인 20px로 변경 */
+    border-radius: 20px 20px 0 0;
+    transform: rotateY(180deg); 
+    backface-visibility: hidden; 
+}
+
+/* 문 텍스트 */
+#door .door-front span {
+    display: block; /* 줄바꿈을 위해 */
+    margin-bottom: 5px;
+}
+
+#door .door-front p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* 마우스 오버 효과 (색상 변경 없음) */
+#door:not(.open) .door-front:hover {
+    background-color: #380000; 
+    /* [★ 수정] 문법 오류 수정 */
+    box-shadow: 0 0 15px #050000; 
+}
+
+/* [★ 추가] "PRESS TO ENTER" 텍스트 스타일 */
+.press-start {
+    position: absolute;
+    bottom: 15%; /* [★ 수정] 200px 위로 이동 */
+    left: 50%;
+    transform: translateX(-50%); /* 정확히 중앙 정렬 */
+    color: white;
+    font-size: 1rem;
+    letter-spacing: 2px; /* 글자 간격 */
+    opacity: 0; /* 애니메이션 시작은 투명하게 */
+    
+    /* 애니메이션 적용 */
+    animation-name: blink;
+    animation-duration: 2s; /* 2초 주기 */
+    animation-iteration-count: infinite; /* 무한 반복 */
+    animation-timing-function: ease-in-out;
+}
+
+/* [★ 추가] 깜빡이는 애니메이션 */
+@keyframes blink {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* 2. 머무름 (Living Room) */
+#living-room {
+    background-color: #e6e0d4;
+}
+
+.object-container {
+    display: flex;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.object {
+    width: 120px;
+    height: 120px;
+    border: 2px solid #aaa;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* 마우스 오버 인터랙션 */
+.object:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    border-color: #007bff;
+}
+
+/* 3. 집중 (Focus) */
+.focus-scene {
+    background-color: #333;
+    color: white;
+    position: relative; 
+}
+
+#focus-window {
+    background: linear-gradient(to bottom, #202020, #111119);
+}
+
+#focus-candle {
+    background-color: #2c2a2a; 
+    color: #f0f0f0;
+}
+
+#focus-plant {
+    background-color: #4d6a4a; 
+}
+
+.back-btn {
+    margin-top: 30px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    position: relative; 
+    z-index: 3;
+}
+
+/* --- 촛불 씬 스타일 --- */
+.breath-container {
+    margin-top: 40px;
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.breath-circle {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 215, 0, 0.5);
+    border-radius: 50%;
+    animation-name: breathe;
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    box-shadow: 0 0 30px 15px rgba(255, 215, 0, 0.3);
+}
+
+.breath-text {
+    position: absolute;
+    font-size: 1.2rem;
+    color: white;
+    animation-name: breath-text-fade; 
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes breath-text-fade {
+    0% { opacity: 0.7; }
+    40% { opacity: 1; }
+    50% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+@keyframes breathe {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(4); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+
+/* --- 비(Rain) 씬 스타일 --- */
+.rain {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.rain.back-row {
+    display: none;
+    z-index: 1;
+    bottom: 60px;
+    opacity: 0.5;
+}
+
+body.back-row-toggle .rain.back-row {
+    display: block;
+}
+
+.drop {
+    position: absolute;
+    bottom: 100%;
+    width: 15px;
+    height: 120px;
+    pointer-events: none;
+    animation: drop 0.5s linear infinite;
+}
+
+@keyframes drop {
+    0% { transform: translateY(0vh); }
+    75% { transform: translateY(90vh); }
+    100% { transform: translateY(90vh); }
+}
+
+/* [★ 수정] 비 씬의 줄기는 .stem 입니다 */
+.stem {
+    width: 1px;
+    height: 60%;
+    margin-left: 7px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.25));
+    animation: stem 0.5s linear infinite;
+}
+
+@keyframes stem {
+    0% { opacity: 1; }
+    65% { opacity: 1; }
+    75% { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+.splat {
+    width: 15px;
+    height: 10px;
+    border-top: 2px dotted rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    opacity: 1;
+    transform: scale(0);
+    animation: splat 0.5s linear infinite;
+    display: none;
+}
+
+body.splat-toggle .splat {
+    display: block;
+}
+
+@keyframes splat {
+    0% { opacity: 1; transform: scale(0); }
+    80% { opacity: 1; transform: scale(0); }
+    90% { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.5); }
+}
+
+
+/* 창문 씬 텍스트/버튼이 비보다 앞에 오도록 Z-index 조정 */
+#focus-window h3,
+#focus-window p {
+    position: relative; 
+    z-index: 3;
+    color: white; 
+}
+
+
+/* --- 4. 집중 (Focus) - 식물 씬 스타일 --- */
+.plant-container {
+    width: 200px;
+    height: 300px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; 
+    margin-top: 20px;
+}
+
+.plant-pot {
+    width: 100px;
+    height: 80px;
+    background-color: #a46a4a; 
+    border-radius: 0 0 10px 10px;
+    position: relative;
+    z-index: 2; 
+}
+
+.plant {
+    position: absolute;
+    bottom: 40px; 
+    width: 10px;
+    height: 200px; 
+    display: flex;
+    justify-content: center;
+}
+
+/* [★ 수정] 식물 씬의 줄기는 .plant .stem 입니다 */
+.plant .stem {
+    width: 10px;
+    height: 100%;
+    background-color: #6a8a4a; 
+    border-radius: 5px 5px 0 0;
+    
+    animation-name: grow-stem;
+    animation-duration: 12s; 
+    animation-iteration-count: 1; 
+    animation-fill-mode: forwards; 
+    animation-timing-function: ease-out;
+    
+    transform-origin: bottom; 
+    transform: scaleY(0); 
+}
+
+.leaf {
+    width: 50px;
+    height: 70px;
+    background-color: #8bc34a; 
+    border-radius: 50% 0 50% 0; 
+    position: absolute;
+    top: 50px; 
+    
+    animation-duration: 6s; 
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    
+    transform: scale(0); 
+}
+
+.leaf-1 {
+    transform-origin: bottom right; 
+    animation-name: unfold-leaf-1;
+    animation-delay: 5s; 
+}
+
+.leaf-2 {
+    transform-origin: bottom left; 
+    animation-name: unfold-leaf-2;
+    animation-delay: 7s; 
+}
+
+@keyframes grow-stem {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+}
+
+@keyframes unfold-leaf-1 {
+    from { transform: scale(0) rotate(20deg); }
+    to { transform: scale(1) rotate(-45deg); }
+}
+
+@keyframes unfold-leaf-2 {
+    from { transform: scale(0) rotate(-20deg); }
+    to { transform: scale(1) rotate(45deg); }
+}
